@@ -1,0 +1,16 @@
+name: C diagnostics checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: make test
+      - run: make sanitize
+      - if: runner.os == 'macOS'
+        run: python3 tests/live_smoke.py
