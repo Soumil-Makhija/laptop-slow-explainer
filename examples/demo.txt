@@ -1,0 +1,31 @@
+SYNTHETIC DEMO (not measurements from this machine)
+Laptop Slow Explainer — 2.000 second sample, 4 logical CPUs
+Aggregate CPU busy: 90.0%
+Swap-outs during sample: 1.000 MiB
+Physical memory: 16384.0 MiB; compressed memory: 1024.0 MiB
+Coverage: 3 processes, 0 unmatched, 0 unavailable observations; truncated: no
+
+Top CPU (100% = one core)
+  PID 100    video-export: 300.0%
+  PID 101    photo-library: 50.0%
+  PID 102    backup-worker: 0.0%
+
+Top current memory footprint
+  PID 102    backup-worker: 3072.00 MiB
+  PID 101    photo-library: 2048.00 MiB
+  PID 100    video-export: 1024.00 MiB
+
+Top disk byte activity (not latency or pressure)
+  PID 102    backup-worker: 0.000 MiB/s read, 32.000 MiB/s write
+  PID 100    video-export: 0.000 MiB/s read, 0.000 MiB/s write
+  PID 101    photo-library: 0.000 MiB/s read, 0.000 MiB/s write
+
+Observations
+  High aggregate CPU activity: CPU contention may contribute.
+  Swap-outs occurred: memory pressure may contribute; this does not identify a responsible process.
+  Disk bytes measure activity, not latency or disk pressure.
+
+Suggested next steps (nothing is changed automatically)
+  Inspect the top CPU list; consider pausing a recognized background job or lowering its concurrency.
+  Save your work and consider closing unused applications; inspect memory footprints without treating them as proof of responsibility.
+  Compare disk activity with the workload you expect; collect latency evidence before concluding storage is the bottleneck.

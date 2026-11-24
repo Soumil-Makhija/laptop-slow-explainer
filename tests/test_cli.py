@@ -27,6 +27,9 @@ class CLI(unittest.TestCase):
         self.assertEqual(report["coverage"], {
             "processes": 3, "unmatched": 0, "unavailable": 0, "truncated": False})
         self.assertIn("not latency or disk pressure", report["observations"][-1])
+        self.assertEqual(report["disk_pressure"], "unknown")
+        self.assertEqual(len(report["suggestions"]), 3)
+        self.assertIn("recognized background job", report["suggestions"][0])
 
     def test_text_has_provenance_and_limits(self):
         run = self.run_cli("--demo")

@@ -22,6 +22,10 @@ make
 ./build/slow-explain --demo --json
 ```
 
+See the committed [synthetic example report](examples/demo.txt). It has known
+answers: 90% system busy, 300% of one core for `video-export`, 1 MiB swapped out,
+and 32 MiB/s reported writes for `backup-worker`. No real process list is included.
+
 Intervals are integer seconds from 1 to 30 (default 3). Collection adds some
 overhead beyond that wait. Exit codes: 0 report produced, 1 collection/output
 failure, 2 invalid options. A valid report may have incomplete process coverage;
@@ -79,6 +83,9 @@ snapshots and can count the same inaccessible process twice.
 or JSON; `main.c` handles bounded sampling and a deterministic synthetic example.
 Everything runs in one process with bounded arrays. Analysis uses no subprocesses
 or language model. Explanations are explicit rules tied to displayed measurements.
+JSON labels its source (`synthetic` or `macos-native`), includes coverage and
+nullable rates, and always labels `disk_pressure` as `unknown`. Suggestions are
+reviewable text; they are never commands that the tool executes.
 
 The collector uses Mach `host_statistics(HOST_CPU_LOAD_INFO)`,
 `host_statistics64(HOST_VM_INFO64)`, `host_page_size`, read-only sysctls, and
@@ -91,6 +98,7 @@ Primary API definitions and semantics:
 - [Apple VM statistics fields and units](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/mach/vm_statistics.h)
 - [Apple process resource accounting fields](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/resource.h)
 - [Apple task resource accounting implementation](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/task.c)
+- [Apple resource-counter timebase conversion tests](https://github.com/apple-oss-distributions/xnu/blob/main/tests/recount/recount_perf_tests.c)
 
 ## Verify
 

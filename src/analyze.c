@@ -190,6 +190,19 @@ static size_t observations(const slow_result *result, const char *notes[4])
     return n;
 }
 
+static size_t suggestions(const slow_result *result, const char *notes[3])
+{
+    size_t n = 0;
+    if (result->cpu_valid && result->busy_pct >= 85.0)
+        notes[n++] = "Inspect the top CPU list; consider pausing a recognized background job or lowering its concurrency.";
+    else
+        notes[n++] = "Repeat a longer sample while the slowdown occurs; low aggregate CPU can hide a single-thread bottleneck or blocked work.";
+    if (result->swap_valid && result->swapout_mib > 0.0)
+        notes[n++] = "Save your work and consider closing unused applications; inspect memory footprints without treating them as proof of responsibility.";
+    notes[n++] = "Compare disk activity with the workload you expect; collect latency evidence before concluding storage is the bottleneck.";
+    return n;
+}
+
 static void print_json(FILE *stream, const slow_result *result)
 {
     static const char *keys[] = {"top_cpu_pids", "top_footprint_pids", "top_disk_activity_pids"};
@@ -233,6 +246,10 @@ static void print_json(FILE *stream, const slow_result *result)
     }
     fputs(",\"observations\":[", stream);
     n = observations(result, notes);
+    for (i = 0; i < n; ++i)
+        fprintf(stream, "%s\"%s\"", i ? "," : "", notes[i]);
+    fputs("],\"disk_pressure\":\"unknown\",\"suggestions\":[", stream);
+    n = suggestions(result, notes);
     for (i = 0; i < n; ++i)
         fprintf(stream, "%s\"%s\"", i ? "," : "", notes[i]);
     fputs("]}\n", stream);
@@ -292,6 +309,10 @@ void slow_print(FILE *stream, const slow_result *result, bool json)
     }
     fputs("\nObservations\n", stream);
     n = observations(result, notes);
+    for (i = 0; i < n; ++i)
+        fprintf(stream, "  %s\n", notes[i]);
+    fputs("\nSuggested next steps (nothing is changed automatically)\n", stream);
+    n = suggestions(result, notes);
     for (i = 0; i < n; ++i)
         fprintf(stream, "  %s\n", notes[i]);
 }
